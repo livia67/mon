@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#4facfe">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Olivia AI">
+    <title>Olivia AI Assistant - Persona Adaptif</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIk9saXZpYSBBSSBBc3Npc3RhbnQiLAogICJzaG9ydF9uYW1lIjogIk9saXZpYSBBSSIsCiAgImRlc2NyaXB0aW9uIjogIkFzaXN0ZW4gQUkgQWRhcHRpZiBkZW5nYW4gU2lzdGVtIFBlcnNvbmEgRmxla3NpYmVsIiwKICAic3RhcnRfdXJsIjogIi8iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiM2NjdlZWEiLAogICJ0aGVtZV9jb2xvciI6ICIjNGZhY2ZlIiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yWnlCM2FXUjBhRDBpTWpRaUlHaGxhV2RvZEQwaU1qUWlJSFpwWlhkQ2IzZzlJakFnTUNBeU5DQXlOQ0lnWm1sc2JEMGlJelJtWVdObVpTSStQR05wY21Oc1pTQmplRDBpTVRJaUlHTjVQU0l4TWlJZ2NqMGlPU0lnWm1sc2JEMGlJekZtWm1ZaUx6NDhkR1Y0ZENCNFBTSXhNaUlnZVQwaU1UY2lJR1pwYkd3OUlpTm1abVlpSUdadmJuUXRjMmw2WlQwaU1UQWlQaUE5UEM5MFpYaDBQand2YzNablBnPT0iLAogICAgICAic2l6ZXMiOiAiMjR4MjQiLAogICAgICAidHlwZSI6ICJpbWFnZS9zdmcreG1sIgogICAgfQogIF0KfQ==">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzRmYWNmZSI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iOSIgZmlsbD0iIzFmZmYiLz48dGV4dCB4PSIxMiIgeT0iMTciIGZpbGw9IiNmZmYiIGZvbnQtc2l6ZT0iMTAiPiA9PC90ZXh0Pjwvc3ZnPg==">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            min-height: calc(100vh - 20px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+
+        .header .creator {
+            font-size: clamp(0.8rem, 2vw, 0.9rem);
+            opacity: 0.8;
+            margin-top: 8px;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            flex: 1;
+            min-height: 0;
+            gap: 0;
+            position: relative;
+        }
+
+        .sidebar {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 20px;
+            border-right: 2px solid #dee2e6;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+            max-width: 300px;
+            min-width: 300px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            z-index: 1;
+        }
+
+        .sidebar.mobile-hidden {
+            transform: translateX(-100%);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 998;
+        }
+
+        .persona-section h3,
+        .model-section h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .persona-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 25px;
+        }
+
+        .persona-btn {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border: 2px solid #e9ecef;
+            padding: 10px 8px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-size: 0.8rem;
+            min-height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            font-weight: 500;
+        }
+
+        .persona-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-color: #4facfe;
+        }
+
+        .persona-btn:active {
+            transform: scale(0.98);
+        }
+
+        .persona-btn.active {
+            background: #4facfe;
+            color: white;
+            border-color: #4facfe;
+            box-shadow: 0 2px 8px rgba(79, 172, 254, 0.3);
+        }
+
+        .model-section {
+            margin-top: 20px;
+        }
+
+        .model-categories {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .model-category h4 {
+            color: #6c757d;
+            margin-bottom: 8px;
+            font-size: clamp(0.8rem, 2vw, 0.9rem);
+            font-weight: 600;
+        }
+
+        .model-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .model-btn {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border: 2px solid #e9ecef;
+            padding: 12px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            min-height: 52px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .model-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-color: #4facfe;
+        }
+
+        .model-btn:active {
+            transform: scale(0.98);
+        }
+
+        .model-btn.active {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border-color: #4facfe;
+            box-shadow: 0 4px 12px rgba(79, 172, 254, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .model-btn.active:hover {
+            transform: translateY(-2px);
+        }
+
+        .model-name {
+            font-size: clamp(0.8rem, 2vw, 0.85rem);
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .model-desc {
+            font-size: clamp(0.7rem, 1.8vw, 0.75rem);
+            opacity: 0.8;
+            line-height: 1.2;
+        }
+
+        .model-btn.active .model-desc {
+            opacity: 0.9;
+        }
+
+        /* Model Dropdown Styles */
+        .model-dropdown {
+            position: relative;
+            width: 100%;
+        }
+
+        .model-dropdown-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border: 2px solid #e9ecef;
+            padding: 12px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            min-height: 52px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .model-dropdown-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-color: #4facfe;
+        }
+
+        .model-dropdown-btn:active {
+            transform: scale(0.98);
+        }
+
+        .selected-model {
+            flex: 1;
+        }
+
+        .dropdown-arrow {
+            font-size: 0.8rem;
+            color: #6c757d;
+            transition: transform 0.3s ease;
+        }
+
+        .model-dropdown-btn.open .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .model-dropdown-content {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            z-index: 1000;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .model-dropdown-content.show {
+            display: block;
+            animation: dropdownFadeIn 0.3s ease;
+        }
+
+        @keyframes dropdownFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .model-dropdown-content .model-category {
+            padding: 15px;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        .model-dropdown-content .model-category:last-child {
+            border-bottom: none;
+        }
+
+        .model-dropdown-content .model-category h4 {
+            color: #6c757d;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .model-option {
+            width: 100%;
+            background: transparent;
+            border: 1px solid #e9ecef;
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            margin-bottom: 6px;
+            min-height: 48px;
+        }
+
+        .model-option:last-child {
+            margin-bottom: 0;
+        }
+
+        .model-option:hover {
+            background: #f8f9fa;
+            border-color: #4facfe;
+        }
+
+        .model-option:active {
+            transform: scale(0.98);
+        }
+
+        .model-option.active {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border-color: #4facfe;
+        }
+
+        .model-option .model-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .model-option .model-desc {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            line-height: 1.2;
+        }
+
+        .model-option.active .model-desc {
+            opacity: 0.9;
+        }
+
+        .chat-area {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            flex: 1;
+            position: relative;
+            z-index: 1;
+            background: white;
+        }
+
+        .status-info {
+            background: #e3f2fd;
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-size: clamp(0.8rem, 2vw, 0.9rem);
+            color: #1976d2;
+            line-height: 1.4;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            min-height: 300px;
+            max-height: calc(100vh - 400px);
+            -webkit-overflow-scrolling: touch;
+            width: 100%;
+            font-size: 0.9rem;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 15px;
+            max-width: 85%;
+            position: relative;
+            word-wrap: break-word;
+            line-height: 1.5;
+        }
+
+        .message.user {
+            background: #4facfe;
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message.assistant {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-bottom-left-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .message-header {
+            font-size: clamp(0.7rem, 1.8vw, 0.8rem);
+            opacity: 0.7;
+            margin-bottom: 5px;
+        }
+
+        .message-content {
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: clamp(0.7rem, 1.8vw, 0.75rem);
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s ease;
+            color: #6c757d;
+            font-weight: 500;
+            min-height: 32px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message:hover .copy-btn,
+        .message:active .copy-btn {
+            opacity: 1;
+        }
+
+        .copy-btn:active {
+            transform: scale(0.95);
+        }
+
+        .message.user .copy-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .copy-success {
+            background: #28a745 !important;
+            color: white !important;
+            border-color: #28a745 !important;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .input-group {
+            flex: 1;
+        }
+
+        .input-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            resize: none;
+            min-height: 50px;
+            max-height: 120px;
+            font-family: inherit;
+            font-size: clamp(0.9rem, 2.2vw, 1rem);
+            transition: border-color 0.3s ease;
+            -webkit-appearance: none;
+        }
+
+        .input-group textarea:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        .send-btn {
+            background: #4facfe;
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: clamp(0.9rem, 2.2vw, 1rem);
+            font-weight: 600;
+            transition: all 0.2s ease;
+            min-height: 50px;
+            min-width: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .send-btn:active {
+            transform: scale(0.98);
+        }
+
+        .send-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 15px;
+            color: #666;
+            font-size: clamp(0.9rem, 2.2vw, 1rem);
+        }
+
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+
+            .container {
+                border-radius: 15px;
+                min-height: calc(100vh - 10px);
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .main-content {
+                display: flex;
+                flex-direction: column;
+                position: relative;
+                height: 100%;
+            }
+
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 280px;
+                height: 100vh;
+                z-index: 1000;
+                border-right: none;
+                box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+                padding-top: 80px;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.5);
+                z-index: 999;
+            }
+
+            .sidebar-overlay.show {
+                display: block;
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .chat-area {
+                padding: 15px;
+                width: 100%;
+                max-width: 100%;
+                overflow-x: hidden;
+                display: flex;
+                flex-direction: column;
+                flex: 1;
+                min-height: calc(100vh - 180px);
+                position: relative;
+                background: white;
+            }
+
+            .chat-messages {
+                flex: 1;
+                overflow-y: auto;
+                margin-bottom: 15px;
+                padding: 12px;
+                background: #f8f9fa;
+                border-radius: 15px;
+                min-height: 250px;
+                max-height: calc(100vh - 280px);
+                font-size: 0.9rem;
+                width: 100%;
+                box-sizing: border-box;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .message {
+                max-width: 95%;
+                padding: 12px 16px;
+                margin-bottom: 12px;
+                font-size: 0.9rem;
+            }
+
+            .message-content {
+                font-size: 0.9rem;
+                line-height: 1.5;
+            }
+
+            .message-header {
+                font-size: 0.8rem;
+                margin-bottom: 6px;
+            }
+
+            .persona-list {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 6px;
+            }
+
+            .persona-btn {
+                font-size: 0.8rem;
+                padding: 10px 6px;
+                min-height: 44px;
+            }
+
+            .input-area {
+                gap: 8px;
+                position: sticky;
+                bottom: 0;
+                background: white;
+                padding: 10px 0;
+                margin-top: auto;
+                border-top: 1px solid #e9ecef;
+                z-index: 10;
+            }
+
+            .input-group {
+                flex: 1;
+            }
+
+            .input-group textarea {
+                width: 100%;
+                padding: 12px;
+                border: 2px solid #e9ecef;
+                border-radius: 12px;
+                resize: none;
+                min-height: 44px;
+                max-height: 100px;
+                font-family: inherit;
+                font-size: 16px;
+                transition: border-color 0.3s ease;
+                -webkit-appearance: none;
+                box-sizing: border-box;
+            }
+
+            .input-group textarea:focus {
+                outline: none;
+                border-color: #4facfe;
+                box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+            }
+
+            .send-btn {
+                min-width: 60px;
+                padding: 12px 16px;
+                min-height: 44px;
+                border-radius: 12px;
+                font-size: 0.9rem;
+            }
+
+            .status-info {
+                font-size: 0.8rem;
+                padding: 10px 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 1.4rem;
+            }
+
+            .chat-area {
+                padding: 10px;
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .chat-messages {
+                padding: 10px;
+                max-height: calc(100vh - 320px);
+                font-size: 0.85rem;
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .message {
+                padding: 10px 14px;
+                font-size: 0.85rem;
+                margin-bottom: 10px;
+            }
+
+            .message-content {
+                font-size: 0.85rem;
+                line-height: 1.4;
+            }
+
+            .message-header {
+                font-size: 0.75rem;
+                margin-bottom: 4px;
+            }
+
+            .copy-btn {
+                font-size: 0.7rem;
+                padding: 3px 6px;
+                min-height: 28px;
+            }
+
+            .persona-btn {
+                font-size: 0.75rem;
+                padding: 8px 4px;
+            }
+
+            .sidebar {
+                width: 260px;
+                padding: 15px;
+                transform: translateX(-100%);
+            }
+
+            .container {
+                overflow-x: hidden;
+            }
+
+            .main-content {
+                overflow-x: hidden;
+            }
+        }
+
+        /* Landscape mobile */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .chat-messages {
+                max-height: calc(100vh - 250px);
+                min-height: 150px;
+            }
+        }
+
+        /* High DPI displays */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .container {
+                box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            }
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            .status-info {
+                background: #1a237e;
+                color: #90caf9;
+            }
+        }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Focus styles for accessibility */
+        .persona-btn:focus,
+        .model-btn:focus,
+        .send-btn:focus,
+        .copy-btn:focus {
+            outline: 2px solid #4facfe;
+            outline-offset: 2px;
+        }
+
+        /* Loading animation */
+        .loading-dots {
+            display: inline-block;
+        }
+
+        .loading-dots::after {
+            content: '';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: ''; }
+            40% { content: '.'; }
+            60% { content: '..'; }
+            80%, 100% { content: '...'; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">☰</button>
+            <h1>🤖 Olivia AI Assistant</h1>
+            <p>Asisten AI Adaptif dengan Sistem Persona yang Fleksibel</p>
+            <p class="creator">Created by Mas-IWAN67</p>
+        </div>
+
+        <div class="main-content">
+            <div class="sidebar-overlay" id="sidebarOverlay"></div>
+            <div class="sidebar" id="sidebar">
+                <div class="persona-section">
+                    <h3>🎭 Pilih Persona</h3>
+                    <div class="persona-list">
+                        <button class="persona-btn active" data-persona="profesional">💼 Profesional</button>
+                        <button class="persona-btn" data-persona="mentor">👨‍🏫 Mentor</button>
+                        <button class="persona-btn" data-persona="programmer">💻 Programmer</button>
+                        <button class="persona-btn" data-persona="humoris">😂 Humoris</button>
+                        <button class="persona-btn" data-persona="empatik">🫂 Empatik</button>
+                        <button class="persona-btn" data-persona="kreatif">🎨 Kreatif</button>
+                        <button class="persona-btn" data-persona="roleplay">🧙 Roleplay</button>
+                        <button class="persona-btn" data-persona="ensiklopedia">📚 Ensiklopedia</button>
+                        <button class="persona-btn" data-persona="ceo">👑 CEO</button>
+                        <button class="persona-btn" data-persona="penerjemah">🌐 Penerjemah</button>
+                    </div>
+                </div>
+
+                <div class="model-section">
+                    <h3>🤖 Pilih Model AI</h3>
+                    <div class="model-dropdown">
+                        <button class="model-dropdown-btn" id="modelDropdownBtn">
+                            <div class="selected-model">
+                                <div class="model-name">GPT-3.5 Turbo</div>
+                                <div class="model-desc">Cepat & Efisien</div>
+                            </div>
+                            <span class="dropdown-arrow">▼</span>
+                        </button>
+                        <div class="model-dropdown-content" id="modelDropdownContent">
+                            <div class="model-category">
+                                <h4>🆓 Model Gratis</h4>
+                                <div class="model-list">
+                                    <button class="model-option active" data-model="gpt-3.5-turbo">
+                                        <div class="model-name">GPT-3.5 Turbo</div>
+                                        <div class="model-desc">Cepat & Efisien</div>
+                                    </button>
+                                    <button class="model-option" data-model="gpt-3.5-turbo-16k">
+                                        <div class="model-name">GPT-3.5 Turbo 16K</div>
+                                        <div class="model-desc">Konteks Panjang</div>
+                                    </button>
+                                    <button class="model-option" data-model="gpt-4o-mini">
+                                        <div class="model-name">GPT-4o Mini</div>
+                                        <div class="model-desc">Ringan & Terjangkau</div>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="model-category">
+                                <h4>💎 Model Pro</h4>
+                                <div class="model-list">
+                                    <button class="model-option" data-model="gpt-4">
+                                        <div class="model-name">GPT-4</div>
+                                        <div class="model-desc">Paling Canggih</div>
+                                    </button>
+                                    <button class="model-option" data-model="gpt-4-turbo">
+                                        <div class="model-name">GPT-4 Turbo</div>
+                                        <div class="model-desc">Cepat & Efisien</div>
+                                    </button>
+                                    <button class="model-option" data-model="gpt-4o">
+                                        <div class="model-name">GPT-4o</div>
+                                        <div class="model-desc">Multimodal</div>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="model-category">
+                                <h4>🔮 Gemini Models</h4>
+                                <div class="model-list">
+                                    <button class="model-option" data-model="gemini-1">
+                                        <div class="model-name">Gemini 1</div>
+                                        <div class="model-desc">Generasi pertama, cepat dan efisien</div>
+                                    </button>
+                                    <button class="model-option" data-model="gemini-1.5">
+                                        <div class="model-name">Gemini 1.5</div>
+                                        <div class="model-desc">Generasi 1.5 dengan konteks lebih panjang</div>
+                                    </button>
+                                    <button class="model-option" data-model="gemini-2">
+                                        <div class="model-name">Gemini 2</div>
+                                        <div class="model-desc">Generasi kedua, performa tinggi</div>
+                                    </button>
+                                    <button class="model-option" data-model="gemini-2.5">
+                                        <div class="model-name">Gemini 2.5</div>
+                                        <div class="model-desc">Teknologi terdepan</div>
+                                    </button>
+                                    <button class="model-option" data-model="gemini-2.5-pro">
+                                        <div class="model-name">Gemini 2.5 Pro</div>
+                                        <div class="model-desc">Performa maksimal</div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-area">
+                <div class="status-info">
+                    <strong>Persona:</strong> <span id="current-persona">💼 Profesional / Bisnis</span><br class="mobile-break">
+                    <strong>Model:</strong> <span id="current-model">GPT-3.5 Turbo</span><br class="mobile-break">
+                    <strong>Status:</strong> <span id="connection-status">Siap</span>
+                </div>
+
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message assistant">
+                        <div class="message-header">Olivia AI - Profesional (GPT-3.5 Turbo)</div>
+                        <div class="message-content" id="welcome_msg">Halo! Saya Olivia, asisten AI adaptif Anda. Saya dapat menyesuaikan gaya komunikasi sesuai kebutuhan Anda. Pilih persona dan model GPT di menu, lalu mulai percakapan!</div>
+                        <button class="copy-btn" onclick="copyMessage('welcome_msg', this)" title="Salin pesan">
+                            📋 Salin
+                        </button>
+                    </div>
+                </div>
+
+                <div class="loading" id="loading">
+                    <div>🤔 Olivia sedang berpikir<span class="loading-dots"></span></div>
+                </div>
+
+                <div class="input-area">
+                    <div class="input-group">
+                        <textarea 
+                            id="messageInput" 
+                            placeholder="Ketik pesan Anda di sini..."
+                            rows="2"
+                        ></textarea>
+                    </div>
+                    <button class="send-btn" id="sendBtn">Kirim</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPersona = 'profesional';
+        let currentModel = 'gpt-3.5-turbo';
+        let conversation = [];
+        let isMobile = window.innerWidth <= 768;
+
+        // Persona mapping
+        const personaNames = {
+            'profesional': '💼 Profesional / Bisnis',
+            'mentor': '👨‍🏫 Mentor Edukatif',
+            'programmer': '💻 Programmer Techie',
+            'humoris': '😂 Humoris',
+            'empatik': '🫂 Teman Curhat / Empatik',
+            'kreatif': '🎨 Penulis Kreatif',
+            'roleplay': '🧙 Roleplay Fantasi',
+            'ensiklopedia': '📚 Ensiklopedia Ilmiah',
+            'ceo': '👑 CEO / Konsultan',
+            'penerjemah': '🌐 Penerjemah Budaya & Bahasa'
+        };
+
+        // Model mapping
+        const modelNames = {
+            'gpt-3.5-turbo': 'GPT-3.5 Turbo',
+            'gpt-3.5-turbo-16k': 'GPT-3.5 Turbo 16K',
+            'gpt-4': 'GPT-4',
+            'gpt-4-turbo': 'GPT-4 Turbo',
+            'gpt-4-turbo-preview': 'GPT-4 Turbo Preview',
+            'gpt-4o': 'GPT-4o',
+            'gpt-4o-mini': 'GPT-4o Mini',
+            'gemini-1': 'Gemini 1',
+            'gemini-1.5': 'Gemini 1.5',
+            'gemini-2': 'Gemini 2',
+            'gemini-2.5': 'Gemini 2.5',
+            'gemini-2.5-pro': 'Gemini 2.5 Pro'
+        };
+
+        // DOM elements
+        const chatMessages = document.getElementById('chatMessages');
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const loading = document.getElementById('loading');
+        const currentPersonaSpan = document.getElementById('current-persona');
+        const currentModelSpan = document.getElementById('current-model');
+        const connectionStatus = document.getElementById('connection-status');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        // Mobile menu functionality
+        function toggleMobileMenu() {
+            if (isMobile) {
+                sidebar.classList.toggle('show');
+                sidebarOverlay.classList.toggle('show');
+            }
+        }
+
+        function closeMobileMenu() {
+            if (isMobile) {
+                sidebar.classList.remove('show');
+                sidebarOverlay.classList.remove('show');
+            }
+        }
+
+        // Event listeners for mobile menu
+        mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+        sidebarOverlay.addEventListener('click', closeMobileMenu);
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            const wasMobile = isMobile;
+            isMobile = window.innerWidth <= 768;
+            
+            if (wasMobile && !isMobile) {
+                // Switching from mobile to desktop
+                sidebar.classList.remove('show');
+                sidebarOverlay.classList.remove('show');
+            }
+        });
+
+        // Persona selection
+        document.querySelectorAll('.persona-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.persona-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentPersona = btn.dataset.persona;
+                currentPersonaSpan.textContent = personaNames[currentPersona];
+                
+                // Close mobile menu after selection
+                closeMobileMenu();
+                
+                // Clear conversation when changing persona
+                conversation = [];
+                addMessage('assistant', `Halo! Sekarang saya menggunakan persona ${personaNames[currentPersona]} dengan model ${modelNames[currentModel]}. Bagaimana saya bisa membantu Anda?`);
+            });
+        });
+
+        // Model dropdown functionality
+        const modelDropdownBtn = document.getElementById('modelDropdownBtn');
+        const modelDropdownContent = document.getElementById('modelDropdownContent');
+
+        function toggleModelDropdown() {
+            modelDropdownContent.classList.toggle('show');
+            modelDropdownBtn.classList.toggle('open');
+        }
+
+        function closeModelDropdown() {
+            modelDropdownContent.classList.remove('show');
+            modelDropdownBtn.classList.remove('open');
+        }
+
+        // Model dropdown button click
+        modelDropdownBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleModelDropdown();
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!modelDropdownBtn.contains(e.target) && !modelDropdownContent.contains(e.target)) {
+                closeModelDropdown();
+            }
+        });
+
+        // Model selection from dropdown
+        document.querySelectorAll('.model-option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active class from all options
+                document.querySelectorAll('.model-option').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // Update current model
+                currentModel = btn.dataset.model;
+                currentModelSpan.textContent = modelNames[currentModel];
+                
+                // Update dropdown button display
+                const selectedModel = modelDropdownBtn.querySelector('.selected-model');
+                const modelName = btn.querySelector('.model-name').textContent;
+                const modelDesc = btn.querySelector('.model-desc').textContent;
+                selectedModel.querySelector('.model-name').textContent = modelName;
+                selectedModel.querySelector('.model-desc').textContent = modelDesc;
+                
+                // Close dropdown and mobile menu
+                closeModelDropdown();
+                closeMobileMenu();
+                
+                // Clear conversation when changing model
+                conversation = [];
+                addMessage('assistant', `Model telah diubah ke ${modelNames[currentModel]}. Saya siap membantu Anda dengan kemampuan yang lebih optimal!`);
+            });
+        });
+
+        // Send message
+        sendBtn.addEventListener('click', sendMessage);
+        
+        // Enhanced keyboard handling for mobile
+        messageInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                if (isMobile || !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            }
+        });
+
+        // Auto-resize textarea
+        messageInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        });
+
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            // Add user message to chat
+            addMessage('user', message);
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+            
+            // Show loading
+            showLoading(true);
+            connectionStatus.textContent = 'Mengirim...';
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        persona: currentPersona,
+                        model: currentModel,
+                        conversation: conversation
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const modelInfo = data.model ? ` (${data.model.name})` : '';
+                    addMessage('assistant', data.response, data.persona + modelInfo);
+                    
+                    // Update conversation history
+                    conversation.push(
+                        { role: 'user', content: message },
+                        { role: 'assistant', content: data.response }
+                    );
+                    
+                    // Keep conversation history manageable
+                    if (conversation.length > 20) {
+                        conversation = conversation.slice(-20);
+                    }
+                    
+                    connectionStatus.textContent = 'Siap';
+                } else {
+                    addMessage('assistant', `❌ Error: ${data.error}`, 'System Error');
+                    connectionStatus.textContent = 'Error';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                addMessage('assistant', '❌ Terjadi kesalahan koneksi. Silakan coba lagi.', 'System Error');
+                connectionStatus.textContent = 'Error Koneksi';
+            }
+
+            showLoading(false);
+        }
+
+        function addMessage(role, content, persona = null) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}`;
+            
+            const timestamp = new Date().toLocaleTimeString('id-ID');
+            const header = role === 'user' ? 
+                `Anda - ${timestamp}` : 
+                `Olivia AI${persona ? ` - ${persona}` : ''} - ${timestamp}`;
+            
+            const messageId = 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            
+            messageDiv.innerHTML = `
+                <div class="message-header">${header}</div>
+                <div class="message-content" id="${messageId}">${content.replace(/\n/g, '<br>')}</div>
+                <button class="copy-btn" onclick="copyMessage('${messageId}', this)" title="Salin pesan">
+                    📋 Salin
+                </button>
+            `;
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function copyMessage(messageId, buttonElement) {
+            const messageContent = document.getElementById(messageId);
+            if (!messageContent) return;
+            
+            // Get the text content without HTML tags
+            const textContent = messageContent.innerText || messageContent.textContent;
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(textContent).then(() => {
+                // Show success feedback
+                const originalText = buttonElement.textContent;
+                buttonElement.textContent = '✅ Tersalin!';
+                buttonElement.classList.add('copy-success');
+                
+                // Reset button after 2 seconds
+                setTimeout(() => {
+                    buttonElement.textContent = originalText;
+                    buttonElement.classList.remove('copy-success');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+                
+                // Fallback for older browsers
+                try {
+                    const textArea = document.createElement('textarea');
+                    textArea.value = textContent;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    
+                    // Show success feedback
+                    const originalText = buttonElement.textContent;
+                    buttonElement.textContent = '✅ Tersalin!';
+                    buttonElement.classList.add('copy-success');
+                    
+                    setTimeout(() => {
+                        buttonElement.textContent = originalText;
+                        buttonElement.classList.remove('copy-success');
+                    }, 2000);
+                } catch (fallbackErr) {
+                    console.error('Fallback copy failed: ', fallbackErr);
+                    buttonElement.textContent = '❌ Gagal';
+                    setTimeout(() => {
+                        buttonElement.textContent = '📋 Salin';
+                    }, 2000);
+                }
+            });
+        }
+
+        function showLoading(show) {
+            loading.style.display = show ? 'block' : 'none';
+            sendBtn.disabled = show;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Focus input only on desktop to avoid mobile keyboard issues
+            if (!isMobile) {
+                messageInput.focus();
+            }
+            
+            // Set initial status
+            connectionStatus.textContent = 'Siap';
+            
+            // Auto-scroll to bottom on page load
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        });
+
+        // Service Worker Registration for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+
+        // Handle online/offline status
+        window.addEventListener('online', () => {
+            connectionStatus.textContent = 'Siap';
+            connectionStatus.style.color = '#1976d2';
+        });
+
+        window.addEventListener('offline', () => {
+            connectionStatus.textContent = 'Offline';
+            connectionStatus.style.color = '#d32f2f';
+        });
+
+        // Prevent zoom on double tap for iOS
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function (event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+
+        // Handle keyboard show/hide on mobile
+        if (isMobile) {
+            const viewport = document.querySelector('meta[name=viewport]');
+            
+            messageInput.addEventListener('focus', () => {
+                viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+            });
+            
+            messageInput.addEventListener('blur', () => {
+                viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+            });
+        }
+    </script>
+</body>
+</html>
