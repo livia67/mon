@@ -6,8 +6,10 @@
   "scripts": {
     "dev": "vercel dev",
     "build": "echo 'Build complete'",
-    "start": "vercel dev",
+    "start": "npm run dev",
     "deploy": "vercel --prod",
+    "netlify:dev": "netlify dev",
+    "netlify:deploy": "netlify deploy --prod",
     "bot": "node bot.js",
     "bot:dev": "nodemon bot.js"
   },

@@ -70,7 +70,11 @@ APP_NAME=Olivia AI Assistant
 
 ### 4. Development
 ```bash
+# Vercel (default)
 npm run dev
+
+# Netlify
+npm run netlify:dev
 ```
 
 ### 5. Deploy ke Vercel
@@ -80,6 +84,15 @@ npm i -g vercel
 
 # Deploy
 npm run deploy
+```
+
+### 6. Deploy ke Netlify
+```bash
+# Install Netlify CLI
+npm i -g netlify-cli
+
+# Deploy
+npm run netlify:deploy
 ```
 
 ## 🔧 Konfigurasi Vercel
