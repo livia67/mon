@@ -1,0 +1,30 @@
+{
+  "name": "olivia-ai-assistant",
+  "version": "1.0.0",
+  "description": "Olivia AI Assistant dengan sistem persona adaptif menggunakan ChatGPT API",
+  "main": "api/chat.js",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'Build complete'",
+    "start": "vercel dev",
+    "deploy": "vercel --prod"
+  },
+  "keywords": [
+    "ai",
+    "chatgpt",
+    "persona",
+    "assistant",
+    "vercel",
+    "serverless"
+  ],
+  "author": "Mas-IWAN67",
+  "license": "MIT",
+  "dependencies": {
+    "openai": "^4.20.1",
+    "cors": "^2.8.5",
+    "@google/generative-ai": "^0.2.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
