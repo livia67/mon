@@ -7,7 +7,9 @@
     "dev": "vercel dev",
     "build": "echo 'Build complete'",
     "start": "vercel dev",
-    "deploy": "vercel --prod"
+    "deploy": "vercel --prod",
+    "bot": "node bot.js",
+    "bot:dev": "nodemon bot.js"
   },
   "keywords": [
     "ai",
@@ -20,11 +22,17 @@
   "author": "Mas-IWAN67",
   "license": "MIT",
   "dependencies": {
-    "openai": "^4.20.1",
+    "@google/generative-ai": "^0.2.1",
     "cors": "^2.8.5",
-    "@google/generative-ai": "^0.2.1"
+    "dotenv": "^17.2.0",
+    "express": "^5.1.0",
+    "node-telegram-bot-api": "^0.66.0",
+    "openai": "^4.20.1"
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
   }
 }
